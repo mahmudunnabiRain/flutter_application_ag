@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_ag/api_service.dart';
 import 'package:flutter_application_ag/auth_controller.dart';
 import 'package:flutter_application_ag/screens/login_screen.dart';
-import 'package:flutter_application_ag/screens/profile_screen.dart';
+import 'package:flutter_application_ag/screens/account_screen.dart';
 import 'package:get/get.dart';
 
 Future<void> main() async {
@@ -28,16 +28,14 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         appBarTheme: const AppBarTheme(
           toolbarHeight: 40,
-          centerTitle: true,
           titleTextStyle: TextStyle(
-            fontSize: 14,
             color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
           elevation: 1,
         ),
       ),
-      home: authController.isAuthenticated() ? const ProfileScreen() : const LoginScreen(),
+      home: Obx(() => authController.isAuthenticated ? const AccountScreen() : const LoginScreen()),
     );
   }
 }

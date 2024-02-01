@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_ag/api_service.dart';
-import 'package:flutter_application_ag/screens/profile_screen.dart';
+import 'package:flutter_application_ag/helpers.dart';
 import 'package:flutter_application_ag/widgets/my_button.dart';
 import 'package:flutter_application_ag/widgets/outlined_text_field.dart';
 import 'package:get/get.dart';
@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> loginPressed() async {
     if (_loginEditingController.text == '' || _passwordEditingController.text == '') {
-      showErrorSnack('All fields required!');
+      mySnack('All fields required!', context, danger: true);
       return;
     }
     setState(() {
@@ -29,14 +29,12 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await apiService.login(login: int.parse(_loginEditingController.text), password: _passwordEditingController.text);
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const ProfileScreen(),
-          ),
-        );
+        mySnack('Login successful.', context);
       }
     } catch (e) {
-      showErrorSnack(e.toString());
+      if (mounted) {
+        mySnack(e.toString(), context, danger: true);
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -44,15 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     }
-  }
-
-  showErrorSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(message, style: const TextStyle(color: Colors.white)),
-      showCloseIcon: true,
-      closeIconColor: Colors.white,
-      backgroundColor: Colors.redAccent,
-    ));
   }
 
   @override

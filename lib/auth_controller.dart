@@ -2,8 +2,17 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends GetxController {
-  RxInt? login;
-  RxString? token;
+  RxInt? _login;
+  RxString? _token;
+
+  // Getters
+  int? get login => _login?.value;
+  String? get token => _token?.value;
+
+  // Computed property for isAuthenticated
+  final RxBool _isAuthenticated = false.obs;
+  bool get isAuthenticated => _isAuthenticated.value;
+  RxBool get isAuthenticatedObs => _isAuthenticated;
 
   Future<void> loadAuthFromPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -11,30 +20,31 @@ class AuthController extends GetxController {
     String? storedToken = prefs.getString('token');
 
     if (storedLogin != null && storedToken != null) {
-      login = storedLogin.obs;
-      token = storedToken.obs;
+      _login = storedLogin.obs;
+      _token = storedToken.obs;
+      _isAuthenticated.value = true;
     }
   }
 
-  bool isAuthenticated() {
-    return login != null && token != null;
-  }
-
   Future<void> setAuth(int newLogin, String newToken) async {
-    login = newLogin.obs;
-    token = newToken.obs;
+    _login = newLogin.obs;
+    _token = newToken.obs;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt('login', newLogin);
     await prefs.setString('token', newToken);
+
+    _isAuthenticated.value = true;
   }
 
   Future<void> removeAuth() async {
-    login = null;
-    token = null;
+    _login = null;
+    _token = null;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('login');
     await prefs.remove('token');
+
+    _isAuthenticated.value = false;
   }
 }
